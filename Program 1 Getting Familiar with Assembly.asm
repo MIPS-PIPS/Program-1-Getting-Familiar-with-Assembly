@@ -4,9 +4,12 @@
 # Brandon Tseng, Michael Wu, Jonathan Dang
 
 .data
-	prompt1: .asciiz		"What is your first number: "
-	prompt2: .asciiz		"What is your second number: "
-	menu: .asciiz "1) addition\n2) Subtraction\n3) Multiplication\n4)Division\n"
+	prompt1: .asciiz "What is your first number: "
+	prompt2: .asciiz "What is your second number: "
+	menu: .asciiz "Select arithmetic operation\n 1) Addition\n 2) Substraction\n 3) Multiplication\n 4) Division\nSelection: "
+	result: .asciiz "Your result is: "
+	true: .asciiz "\nUser inputs are the same."
+	false: .asciiz "\nUser inputs are different."
 
 .text
 main:
@@ -15,7 +18,7 @@ main:
 	la $a0, prompt1
 	syscall
 	
-	# Store first integer
+	# Get first integer input
 	li $v0, 5
 	syscall
 	move $s0, $v0
@@ -25,33 +28,103 @@ main:
 	la $a0, prompt2
 	syscall
 	
-	# Store second integer
+	# Get second integer input
 	li $v0, 5
 	syscall
 	move $s1, $v0
-
-	#adding 2 ints
+	
+	# Print menu
+	li $v0, 4
+	la $a0, menu
+	syscall
+	
+	# Get menu selection
+	li, $v0, 5
+	syscall
+	move $s2, $v0
+	
+	# Compare selections
+	beq $s2, 1, addition
+	beq $s2, 2, substraction
+	beq $s2, 3, multiplication
+	beq $s2, 4, division
+	
+addition:
+	# Adding 2 ints
 	add $s3, $s0, $s1
+	
+	# Print output
+	li $v0, 4
+	la $a0, result
+	syscall
 	li $v0, 1
 	move $a0, $s3
 	syscall
+	
+	# Skip other cases to continue program
+	j continue_program
 
-	#subtracting 2 ints
+substraction:
+	# Subtracting 2 ints
 	sub $s3, $s0, $s1
+	
+	# Print output
+	li $v0, 4
+	la $a0, result
+	syscall
 	li $v0, 1
 	move $a0, $s3
 	syscall
+	
+	# Skip other cases to continue program
+	j continue_program
 
-	#multiplying 2 ints
+multiplication:
+	# Multiplying 2 ints
 	mul $s3, $s0, $s1
+	
+	# Print output
+	li $v0, 4
+	la $a0, result
+	syscall
 	li $v0, 1
 	move $a0, $s3
 	syscall
+	
+	# Skip other cases to continue program
+	j continue_program
 
-	#dividing 2 ints
+division:
+	# Dividing 2 ints
 	div $s3, $s0, $s1
+	
+	# Print output
+	li $v0, 4
+	la $a0, result
+	syscall
 	li $v0, 1
 	move $a0, $s3
+	syscall
+	
+continue_program:
+	# Compare ints to each other
+	beq $s0, $s1, is_equal
+	bne $s0, $s1, is_not_equal
+	
+is_equal:
+	# Print true result
+	li, $v0, 4
+	la, $a0, true
+	syscall
+
+	# Exit syscall
+	li $v0, 10
+	syscall
+	
+is_not_equal:
+	# Print false result
+	li, $v0, 4
+	la, $a0, false
 	syscall
 	
 	# Exit syscall
