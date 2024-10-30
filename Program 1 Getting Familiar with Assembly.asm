@@ -6,13 +6,16 @@
 .data
 	prompt1: .asciiz "What is your first number: "
 	prompt2: .asciiz "What is your second number: "
-	menu: .asciiz "Select arithmetic operation\n 1) Addition\n 2) Substraction\n 3) Multiplication\n 4) Division\nSelection: "
-	result: .asciiz "Your result is: "
+	menu: .asciiz "Select arithmetic operation\n 1) Addition\n 2) Subtraction\n 3) Multiplication\n 4) Division\nSelection: "
+	result: .asciiz "The result of the arithmetic operation is: "
+	divideByZero: .asciiz "Error: can't divide by 0"
 	true: .asciiz "\nUser inputs are the same."
 	false: .asciiz "\nUser inputs are different."
 
 .text
 main:
+
+getFirstNumber:
 	# Print first prompt
 	li $v0, 4
 	la $a0, prompt1
@@ -21,7 +24,7 @@ main:
 	# Get first integer input
 	li $v0, 5
 	syscall
-	move $s0, $v0
+    move $s0, $v0 # stored in $s0
 	
 	# Print second prompt
 	li $v0, 4
@@ -31,7 +34,7 @@ main:
 	# Get second integer input
 	li $v0, 5
 	syscall
-	move $s1, $v0
+	move $s1, $v0 # stored in $s1
 	
 	# Print menu
 	li $v0, 4
@@ -45,7 +48,7 @@ main:
 	
 	# Compare selections
 	beq $s2, 1, addition
-	beq $s2, 2, substraction
+	beq $s2, 2, subtraction
 	beq $s2, 3, multiplication
 	beq $s2, 4, division
 	
@@ -64,7 +67,7 @@ addition:
 	# Skip other cases to continue program
 	j continue_program
 
-substraction:
+subtraction:
 	# Subtracting 2 ints
 	sub $s3, $s0, $s1
 	
@@ -95,7 +98,19 @@ multiplication:
 	j continue_program
 
 division:
-	# Dividing 2 ints
+    # Check for division by zero
+    bne $s1, $zero, performDivision  # If $s1 is not zero, branch to performDivision
+	# Division by zero error handling
+	
+divideByZeroError:
+    # Print divide by zero error message
+    li $v0, 4
+    la $a0, divideByZero
+    syscall
+    j continue_program # Skip division and go to the end or next part of the program
+
+performDivision:
+    # Dividing 2 ints
 	div $s3, $s0, $s1
 	
 	# Print output
@@ -105,6 +120,9 @@ division:
 	li $v0, 1
 	move $a0, $s3
 	syscall
+
+    # Continue to the rest of the program
+    j continue_program
 	
 continue_program:
 	# Compare ints to each other
