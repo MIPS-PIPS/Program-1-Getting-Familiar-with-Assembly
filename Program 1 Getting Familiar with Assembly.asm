@@ -1,7 +1,8 @@
 # CS 2640
-# 10/21/2024
+# 11/3/2024
 # Program 1 Getting Familiar with Assembly
 # Brandon Tseng, Michael Wu, Jonathan Dang
+# Github Repository: https://github.com/MIPS-PIPS/Program-1-Getting-Familiar-with-Assembly/tree/main
 
 .data
 	prompt1: .asciiz "What is your first number: "
